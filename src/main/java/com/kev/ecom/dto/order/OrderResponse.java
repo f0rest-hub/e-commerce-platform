@@ -2,8 +2,8 @@ package com.kev.ecom.dto.order;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.v3.oas.annotations.media.Schema;
 import com.kev.ecom.enums.OrderStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -53,10 +53,6 @@ public class OrderResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(description = "Details of an individual item in an order")
     public static class OrderItemResponse {
-
-        @Schema(description = "Unique ID of the order item entry", example = "501")
-        private Long id;
-
         @JsonProperty("item_id")
         @Schema(description = "External ID or SKU of the item", example = "PRD-001")
         private String itemId;

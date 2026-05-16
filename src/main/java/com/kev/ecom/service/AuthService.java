@@ -24,13 +24,10 @@ public class AuthService {
     private final JwtUtil jwtUtil;
 
     public Mono<AuthResponse> register(RegisterRequest request) {
-        log.debug(request.getEmail());
-        log.debug(request.getPassword());
-        log.debug(request.getFullName());
-        return userRepository.existsByEmail(request.getEmail())
+        return userRepository.existsByEmail(request.getEmail().toLowerCase())
                 .flatMap(exists -> {
                     if (exists) {
-                        return Mono.error(new IllegalArgumentException("The Email you entered already exists: " + request.getEmail()));
+                        return Mono.error(new IllegalArgumentException("The Email you entered already exists: " + request.getEmail().toLowerCase()));
                     }
 
                     User newUser = User.builder()

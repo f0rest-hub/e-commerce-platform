@@ -1,5 +1,6 @@
 package com.kev.ecom.exception;
 
+import com.kev.ecom.util.PeerKartUtil;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
+import org.springframework.web.server.ServerWebInputException;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -18,7 +20,6 @@ import java.util.Map;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Mono<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex) {
@@ -79,6 +80,21 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error("Internal Server Error")
                 .message("An unexpected error occurred")
+                .timestamp(LocalDateTime.now())
+                .build());
+    }
+
+    @ExceptionHandler(ServerWebInputException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Mono<ErrorResponse> handleMethodArgumentTypeMismatchWebFlux(ServerWebInputException ex) {
+        log.warn("Invalid parameter type: {}", ex.getMessage());
+
+        String message = PeerKartUtil.getWebFluxErrorMessage(ex);
+
+        return Mono.just(ErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Bad Request")
+                .message(message)
                 .timestamp(LocalDateTime.now())
                 .build());
     }

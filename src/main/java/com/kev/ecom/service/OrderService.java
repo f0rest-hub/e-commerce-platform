@@ -21,7 +21,6 @@ import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -31,8 +30,6 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderItemMappingRepository mappingRepository;
-
-    // ── Create ────────────────────────────────────────────────────────────────
 
     @Transactional
     public Mono<OrderResponse> createOrder(Long userId, CreateOrderRequest request) {
@@ -51,7 +48,6 @@ public class OrderService {
                 .map(i -> i.getUnitPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // 2. Persist the order header
         Order order = Order.builder()
                 .userId(userId)
                 .status(OrderStatus.PENDING)
@@ -156,7 +152,6 @@ public class OrderService {
                 ? List.of()
                 : order.getItems().stream()
                   .map(i -> OrderResponse.OrderItemResponse.builder()
-                            .id(i.getId())
                             .itemId(i.getItemId())
                             .itemName(i.getItemName())
                             .quantity(i.getQuantity())

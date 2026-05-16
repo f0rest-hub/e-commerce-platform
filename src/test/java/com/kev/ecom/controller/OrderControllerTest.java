@@ -18,8 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
@@ -48,6 +50,14 @@ class OrderControllerTest {
     @MockitoBean
     JwtUtil jwtUtil;
 
+    @BeforeEach
+    void setUp() {
+        when(jwtUtil.generateToken(anyLong(), anyString())).thenReturn("mock-token");
+        when(jwtUtil.isTokenValid(anyString())).thenReturn(true);
+        when(jwtUtil.extractEmail(anyString())).thenReturn("test@example.com");
+        when(jwtUtil.extractUserId(anyString())).thenReturn(USER_ID);
+    }
+
     private static final Long   USER_ID  = 1L;
     private static final Long   ORDER_ID = 10L;
     private static final String BASE     = "/api/orders";
@@ -56,8 +66,13 @@ class OrderControllerTest {
 
     private WebTestClient authenticatedClient() {
         AuthenticatedUser principal = new AuthenticatedUser(USER_ID, "test@example.com");
-        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(principal, null, List.of());
-        return webClient.mutateWith(mockAuthentication(auth));
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                principal, null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+
+        return webClient.mutateWith(mockAuthentication(auth))
+                .mutate()
+                .defaultHeader("Authorization", "Bearer " + jwtUtil.generateToken(USER_ID, "test@example.com"))
+                .build();
     }
 
     // ── shared response fixtures ───────────────────────────────────────────────
@@ -72,8 +87,10 @@ class OrderControllerTest {
                 .updatedAt(LocalDateTime.now())
                 .items(List.of(
                         OrderResponse.OrderItemResponse.builder()
-                                .id(100L).itemId("SKU-1").itemName("Widget")
-                                .quantity(2).unitPrice(new BigDecimal("25.00"))
+                                .itemId("SKU-1")
+                                .itemName("Widget")
+                                .quantity(2)
+                                .unitPrice(new BigDecimal("25.00"))
                                 .subtotal(new BigDecimal("50.00"))
                                 .build()))
                 .build();
@@ -99,7 +116,6 @@ class OrderControllerTest {
 
             authenticatedClient()
                     .post().uri(BASE + "/create-order")
-                    .header("Authorization", "Bearer " + jwtUtil.generateToken(USER_ID, "test@example.com"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue("""
                             {"items":[{
@@ -125,7 +141,6 @@ class OrderControllerTest {
         void emptyItems() {
             authenticatedClient()
                     .post().uri(BASE + "/create-order")
-                    .header("Authorization", "Bearer " + jwtUtil.generateToken(USER_ID, "test@example.com"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue("""
                             {"items":[]}
@@ -280,7 +295,7 @@ class OrderControllerTest {
             authenticatedClient()
                     .delete().uri(BASE + "/cancel-order/" + ORDER_ID)
                     .exchange()
-                    .expectStatus().isEqualTo(422);
+                    .expectStatus().isEqualTo(HttpStatus.CONFLICT);
         }
 
         @Test

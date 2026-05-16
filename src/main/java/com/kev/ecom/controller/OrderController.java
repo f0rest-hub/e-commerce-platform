@@ -31,7 +31,7 @@ public class OrderController {
     public Mono<OrderResponse> createOrder(
             @AuthenticationPrincipal AuthenticatedUser principal,
             @Valid @RequestBody CreateOrderRequest request) {
-        return orderService.createOrder(principal.getUserId(), request);
+        return orderService.createOrder(principal.userId(), request);
     }
 
     @GetMapping("/get-order/{id}")
@@ -39,15 +39,15 @@ public class OrderController {
     public Mono<OrderResponse> getOrderDetails(
             @AuthenticationPrincipal AuthenticatedUser principal,
             @Parameter(description = "ID of the order to retrieve") @PathVariable Long id) {
-        return orderService.getOrderById(principal.getUserId(), id);
+        return orderService.getOrderById(principal.userId(), id);
     }
 
     @GetMapping
     @Operation(summary = "Get all orders", description = "Retrieves all orders for the authenticated user, optionally filtered by status")
     public Flux<OrderResponse> getAllOrders(
             @AuthenticationPrincipal AuthenticatedUser principal,
-            @Parameter(description = "Optional status to filter orders by") @RequestParam(required = false) OrderStatus status) {
-        return orderService.getAllOrdersForUser(principal.getUserId(), status);
+            @Valid @Parameter(description = "Optional status to filter orders by") @RequestParam(required = false) OrderStatus status) {
+        return orderService.getAllOrdersForUser(principal.userId(), status);
     }
 
     @DeleteMapping("/cancel-order/{id}")
@@ -55,6 +55,6 @@ public class OrderController {
     public Flux<OrderResponse> cancelOrder(
             @AuthenticationPrincipal AuthenticatedUser principal,
             @Parameter(description = "ID of the order to cancel") @PathVariable Long id) {
-        return orderService.cancelOrder(principal.getUserId(), id);
+        return orderService.cancelOrder(principal.userId(), id);
     }
 }

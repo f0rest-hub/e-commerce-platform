@@ -1,13 +1,7 @@
 package com.kev.ecom.model.auth;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+public record AuthenticatedUser(Long userId, String email) {
 
-@Getter
-@AllArgsConstructor
-public class AuthenticatedUser {
-    private final Long   userId;
-    private final String email;
 }
 
 
