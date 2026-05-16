@@ -13,9 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
@@ -75,8 +73,6 @@ class OrderControllerTest {
                 .build();
     }
 
-    // ── shared response fixtures ───────────────────────────────────────────────
-
     private OrderResponse pendingResponse() {
         return OrderResponse.builder()
                 .orderId(ORDER_ID)
@@ -101,8 +97,6 @@ class OrderControllerTest {
         r.setStatus(OrderStatus.CANCELLED);
         return r;
     }
-
-    // ── POST /api/orders/create-order ─────────────────────────────────────────
 
     @Nested
     @DisplayName("POST /create-order")
@@ -162,8 +156,6 @@ class OrderControllerTest {
         }
     }
 
-    // ── GET /api/orders/get-order/{id} ────────────────────────────────────────
-
     @Nested
     @DisplayName("GET /get-order/{id}")
     class GetOrderDetails {
@@ -202,8 +194,6 @@ class OrderControllerTest {
                     .expectStatus().isUnauthorized();
         }
     }
-
-    // ── GET /api/orders ───────────────────────────────────────────────────────
 
     @Nested
     @DisplayName("GET /")

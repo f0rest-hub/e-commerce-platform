@@ -8,9 +8,7 @@ import reactor.core.publisher.Flux;
 public interface OrderItemRepository extends ReactiveCrudRepository<OrderItem, Long> {
 
     /**
-     * Fetch all items linked to an order in their defined position order,
-     * by joining through the mapping table — keeps the repository query
-     * close to the schema rather than spreading join logic across the service.
+     * Fetch all items linked to an order
      */
     @Query("""
             SELECT i.*

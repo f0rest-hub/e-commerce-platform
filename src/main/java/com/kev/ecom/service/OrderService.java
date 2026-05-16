@@ -125,10 +125,6 @@ public class OrderService {
                 .doOnNext(count -> log.info("Scheduler: promoted {} PENDING → PROCESSING", count));
     }
 
-    /**
-     * Loads items for an order via the mapping join and attaches them
-     * to the order before mapping to the response DTO.
-     */
     private Mono<OrderResponse> populateItems(Order order) {
         return orderItemRepository.findByOrderId(order.getId())
                 .collectList()

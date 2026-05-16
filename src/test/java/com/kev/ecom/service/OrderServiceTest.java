@@ -1,7 +1,6 @@
 package com.kev.ecom.service;
 
 import com.kev.ecom.dto.order.CreateOrderRequest;
-import com.kev.ecom.dto.order.OrderResponse;
 import com.kev.ecom.enums.OrderStatus;
 import com.kev.ecom.exception.OrderCancellationException;
 import com.kev.ecom.exception.OrderNotFoundException;
@@ -82,8 +81,6 @@ class OrderServiceTest {
         req.setItems(new java.util.ArrayList<>(List.of(item)));  // mutable — safe to add to
         return req;
     }
-
-    // ── createOrder ───────────────────────────────────────────────────────────
 
     @Nested
     @DisplayName("createOrder()")
@@ -174,8 +171,6 @@ class OrderServiceTest {
         }
     }
 
-    // ── getOrderById ──────────────────────────────────────────────────────────
-
     @Nested
     @DisplayName("getOrderById()")
     class GetOrderById {
@@ -218,8 +213,6 @@ class OrderServiceTest {
         }
     }
 
-    // ── getAllOrdersForUser ────────────────────────────────────────────────────
-
     @Nested
     @DisplayName("getAllOrdersForUser()")
     class GetAllOrders {
@@ -261,8 +254,6 @@ class OrderServiceTest {
                     .verifyComplete();
         }
     }
-
-    // ── cancelOrder ───────────────────────────────────────────────────────────
 
     @Nested
     @DisplayName("cancelOrder()")
@@ -342,8 +333,6 @@ class OrderServiceTest {
                     .verify();
         }
     }
-
-    // ── promotePendingOrders ──────────────────────────────────────────────────
 
     @Nested
     @DisplayName("promotePendingOrders()")

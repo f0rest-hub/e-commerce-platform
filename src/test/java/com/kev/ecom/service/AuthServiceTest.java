@@ -1,12 +1,10 @@
 package com.kev.ecom.service;
 
-import com.kev.ecom.dto.auth.AuthResponse;
 import com.kev.ecom.dto.auth.LoginRequest;
 import com.kev.ecom.dto.auth.RegisterRequest;
 import com.kev.ecom.model.auth.User;
 import com.kev.ecom.repository.UserRepository;
 import com.kev.ecom.util.JwtUtil;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,7 +19,8 @@ import reactor.test.StepVerifier;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,8 +32,6 @@ class AuthServiceTest {
     @Mock JwtUtil           jwtUtil;
 
     @InjectMocks AuthService authService;
-
-    // ── shared fixtures ───────────────────────────────────────────────────────
 
     private static final Long   USER_ID    = 1L;
     private static final String EMAIL      = "test@example.com";
@@ -53,7 +50,6 @@ class AuthServiceTest {
                 .build();
     }
 
-    // ── register ──────────────────────────────────────────────────────────────
 
     @Nested
     @DisplayName("register()")
@@ -145,8 +141,6 @@ class AuthServiceTest {
             verify(userRepository).save(argThat(u -> HASH.equals(u.getPasswordHash())));
         }
     }
-
-    // ── login ─────────────────────────────────────────────────────────────────
 
     @Nested
     @DisplayName("login()")

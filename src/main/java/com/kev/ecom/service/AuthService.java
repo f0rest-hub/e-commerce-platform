@@ -29,7 +29,7 @@ public class AuthService {
                     if (exists) {
                         return Mono.error(new IllegalArgumentException("The Email you entered already exists: " + request.getEmail().toLowerCase()));
                     }
-
+                    // TODO - Better to store passwords in key vault or similar. Even if hashed. Direct DB storage is poor...
                     User newUser = User.builder()
                             .email(request.getEmail())
                             .passwordHash(passwordEncoder.encode(request.getPassword()))

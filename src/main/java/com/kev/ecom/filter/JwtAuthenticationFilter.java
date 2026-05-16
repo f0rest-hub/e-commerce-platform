@@ -39,6 +39,7 @@ public class JwtAuthenticationFilter implements WebFilter {
         }
 
         try {
+            // TODO - Add a role-based authorization check when application expands to allow admin auth
             String email  = jwtUtil.extractEmail(token);
             Long   userId = jwtUtil.extractUserId(token);
 

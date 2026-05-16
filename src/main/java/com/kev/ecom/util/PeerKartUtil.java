@@ -14,7 +14,7 @@ public class PeerKartUtil {
         Throwable cause = ex.getCause();
 
         while (cause != null) {
-            /** Enum mismatch handling */
+            /** Wrong enum handling in get-all-orders API */
             if (cause instanceof IllegalArgumentException illegalArgEx) {
                 if (illegalArgEx.getMessage() != null && illegalArgEx.getMessage().contains("No enum constant")) {
                     return "Invalid order status. Allowed values: " + Arrays.toString(OrderStatus.values());

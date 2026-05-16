@@ -26,8 +26,6 @@ public class JwtUtil {
         this.expirationMs = expirationMs;
     }
 
-    // ── Token generation ──────────────────────────────────────────────────────
-
     public String generateToken(Long userId, String email) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
@@ -40,8 +38,6 @@ public class JwtUtil {
                 .signWith(secretKey)
                 .compact();
     }
-
-    // ── Token parsing ─────────────────────────────────────────────────────────
 
     public Claims extractAllClaims(String token) {
         return Jwts.parser()

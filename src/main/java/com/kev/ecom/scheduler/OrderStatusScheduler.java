@@ -17,6 +17,8 @@ public class OrderStatusScheduler {
      * Every 5 minutes, promote all PENDING orders to PROCESSING.
      * fixedRate is in milliseconds: 5 * 60 * 1000 = 300_000
      */
+
+    // TODO - Move fixed rate to environment variables
     @Scheduled(fixedRate = 300_000)
     public void promotePendingToProcessing() {
         log.info("Scheduler triggered: checking for PENDING orders...");

@@ -2,6 +2,7 @@ spring:
   application:
     name: ecommerce-backend
 
+  # TODO - Hardcoded DB credentials to local. Change so it fetches from env var when deployed.
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/
     username: postgres
@@ -11,22 +12,14 @@ spring:
     init:
       mode: always   # runs schema.sql on startup
 
-#  jackson:
-#    property-naming-strategy: SNAKE_CASE
-#    serialization:
-#      write-dates-as-timestamps: false
-#    deserialization:
-#      fail-on-unknown-properties: false
-
 server:
   port: 8080
 
-# ── JWT ────────────────────────────────────────────────────────────────────────
 app:
   jwt:
     # Minimum 32 chars for HS256 — change this in production and inject via env var
     secret: "${JWT_SECRET:my-super-secret-key-change-in-production!}"
-    expiration-ms: 86400000   # 24 hours
+    expiration-ms: 86400000   # 24 hours # TODO - Big expiry time for uninterrupted testing. Change to ideal value.
 
 logging:
   level:

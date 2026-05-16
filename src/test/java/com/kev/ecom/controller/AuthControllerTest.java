@@ -9,7 +9,6 @@ import com.kev.ecom.util.JwtUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
 import org.springframework.context.annotation.Import;
@@ -52,8 +51,6 @@ class AuthControllerTest {
                 .fullName("Test User")
                 .build();
     }
-
-    // ── POST /api/auth/register ───────────────────────────────────────────────
 
     @Nested
     @DisplayName("POST /register")
@@ -141,8 +138,6 @@ class AuthControllerTest {
                     .expectStatus().isBadRequest();
         }
     }
-
-    // ── POST /api/auth/login ──────────────────────────────────────────────────
 
     @Nested
     @DisplayName("POST /login")
