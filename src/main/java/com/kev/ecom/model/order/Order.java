@@ -21,6 +21,7 @@ import java.util.List;
 @Table("orders")
 public class Order {
 
+    // TODO - Maybe Make order Id a GUID
     @Id
     @Column("id")
     private Long id;

@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Table("items")
 public class OrderItem {
-
+    // TODO - Maybe Make item Id a GUID
     @Id
     private Long id;
 
