@@ -2,9 +2,9 @@ spring:
   application:
     name: ecommerce-backend
 
-# TODO - Create seperate database instead of connecting to default postgres database
+  # TODO - Create separate database instead of connecting to default postgres database
   r2dbc:
-    url: ${DB_URL:r2dbc:postgresql://localhost:5432/}
+    url: ${DB_URL:r2dbc:postgresql://localhost:${DB_PORT:5432}/}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
 
@@ -21,11 +21,13 @@ app:
     # Minimum 32 chars for HS256 — change this in production and inject via env var
     secret: "${JWT_SECRET:my-super-secret-key-change-in-production!}"
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}   # 24 hours
+
   scheduler:
     order-promotion-rate: ${ORDER_PROMOTION_RATE:300000}
 
 logging:
   level:
     com.kev.ecom: ${LOG_LEVEL:DEBUG}
-    org.springframework.r2dbc: ${LOG_LEVEL_R2DBC:DEBUG}
-    org.springframework.security: ${LOG_LEVEL_SECURITY:DEBUG}
+    org.springframework.r2dbc: OFF
+    org.springframework.security: OFF
+    org.springframework.web: OFF
