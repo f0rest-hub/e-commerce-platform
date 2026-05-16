@@ -28,6 +28,8 @@ public class SecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                         // Auth endpoints are public
                         .pathMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
+                        // Swagger endpoints are public
+                        .pathMatchers("/webjars/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                         // Everything else requires a valid JWT
                         .anyExchange().authenticated()
                 )
