@@ -1,5 +1,6 @@
 package com.kev.ecom.dto.order;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kev.ecom.enums.OrderStatus;
 import lombok.Builder;
@@ -11,9 +12,10 @@ import java.util.List;
 
 @Data
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderResponse {
-
-    private Long id;
+    @JsonProperty("order_id")
+    private Long orderId;
 
     @JsonProperty("user_id")
     private Long userId;
@@ -33,6 +35,7 @@ public class OrderResponse {
 
     @Data
     @Builder
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class OrderItemResponse {
 
         private Long id;

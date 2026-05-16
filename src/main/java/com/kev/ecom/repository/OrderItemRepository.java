@@ -17,7 +17,6 @@ public interface OrderItemRepository extends ReactiveCrudRepository<OrderItem, L
               FROM items i
               JOIN order_item_mappings m ON m.item_id = i.id
              WHERE m.order_id = :orderId
-             ORDER BY m.position
             """)
     Flux<OrderItem> findByOrderId(Long orderId);
 }

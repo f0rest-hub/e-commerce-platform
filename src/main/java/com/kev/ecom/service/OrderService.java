@@ -39,8 +39,8 @@ public class OrderService {
         List<OrderItem> itemsToSave = request.getItems().stream()
                 .map(i -> {
                     return OrderItem.builder()
-                            .itemId(i.getProductId())
-                            .itemName(i.getProductName())
+                            .itemId(i.getItemId())
+                            .itemName(i.getItemName())
                             .quantity(i.getQuantity())
                             .unitPrice(i.getUnitPrice())
                             .build();
@@ -61,33 +61,26 @@ public class OrderService {
                 .build();
 
         return orderRepository.save(order)
-                .flatMap(savedOrder ->
-                        // 3. Persist each item independently into the items table
-                        orderItemRepository.saveAll(itemsToSave)
-                                .collectList()
-                                .flatMap(savedItems -> {
-                                    // 4. Build mapping rows with 1-based position
-                                    AtomicInteger pos = new AtomicInteger(1);
-                                    List<OrderItemMapping> mappings = savedItems.stream()
-                                            .map(item -> OrderItemMapping.builder()
-                                                    .orderId(savedOrder.getId())
-                                                    .itemId(item.getId())
-                                                    .position(pos.getAndIncrement())
-                                                    .build())
-                                            .collect(Collectors.toList());
+                .flatMap(savedOrder -> {
+                    return orderItemRepository.saveAll(itemsToSave)
+                            .collectList()
+                            .flatMap(savedItems -> {
+                                List<OrderItemMapping> mappings = savedItems.stream()
+                                        .map(item -> OrderItemMapping.builder()
+                                                .orderId(savedOrder.getId())
+                                                .itemId(item.getId())
+                                                .build())
+                                        .collect(Collectors.toList());
 
-                                    // 5. Persist the mapping rows
-                                    return mappingRepository.saveAll(mappings)
-                                            .collectList()
-                                            .map(__ -> {
-                                                savedOrder.setItems(savedItems);
-                                                return toResponse(savedOrder);
-                                            });
-                                })
-                );
+                                return mappingRepository.saveAll(mappings)
+                                        .collectList()
+                                        .map(__ -> {
+                                            savedOrder.setItems(savedItems);
+                                            return toResponse(savedOrder);
+                                        });
+                            });
+                });
     }
-
-    // ── Read ──────────────────────────────────────────────────────────────────
 
     public Mono<OrderResponse> getOrderById(Long userId, Long orderId) {
         return orderRepository.findById(orderId)
@@ -100,16 +93,13 @@ public class OrderService {
                 });
     }
 
-    public Flux<OrderResponse> getOrdersForUser(Long userId, OrderStatus status) {
-        Flux<Order> orders = (status != null)
-                ? orderRepository.findByUserIdAndStatus(userId, status)
-                : orderRepository.findByUserId(userId);
-
-        return orders.flatMap(this::populateItems);
+    public Flux<OrderResponse> getAllOrdersForUser(Long userId, OrderStatus status) {
+        Flux<Order> orders = (status != null) ? orderRepository.findByUserIdAndStatus(userId, status) : orderRepository.findByUserId(userId);
+        return orders.map(this::populateOrders);
     }
 
     @Transactional
-    public Mono<OrderResponse> cancelOrder(Long userId, Long orderId) {
+    public Flux<OrderResponse> cancelOrder(Long userId, Long orderId) {
         return orderRepository.findById(orderId)
                 .switchIfEmpty(Mono.error(new OrderNotFoundException(orderId)))
                 .flatMap(order -> {
@@ -123,7 +113,8 @@ public class OrderService {
                     order.setUpdatedAt(LocalDateTime.now());
                     return orderRepository.save(order);
                 })
-                .flatMap(this::populateItems);
+                .thenMany(orderRepository.findByUserId(userId))
+                .map(this::populateOrders);
     }
 
     @Transactional
@@ -151,6 +142,15 @@ public class OrderService {
                 });
     }
 
+    private OrderResponse populateOrders(Order order) {
+        return OrderResponse.builder()
+                .userId(order.getUserId())
+                .orderId(order.getId())
+                .status(order.getStatus())
+                .createdAt(order.getCreatedAt())
+                .build();
+    }
+
     private OrderResponse toResponse(Order order) {
         List<OrderResponse.OrderItemResponse> itemResponses = order.getItems() == null
                 ? List.of()
@@ -166,7 +166,7 @@ public class OrderService {
                   .collect(Collectors.toList());
 
         return OrderResponse.builder()
-                .id(order.getId())
+                .orderId(order.getId())
                 .userId(order.getUserId())
                 .status(order.getStatus())
                 .totalAmount(order.getTotalAmount())

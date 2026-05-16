@@ -23,13 +23,13 @@ public class CreateOrderRequest {
     @Data
     public static class OrderItemRequest {
 
-        @NotBlank(message = "Product ID is required")
-        @JsonProperty("product_id")
-        private String productId;
+        @NotBlank(message = "Item ID is required")
+        @JsonProperty("item_id")
+        private String itemId;
 
-        @NotBlank(message = "Product name is required")
-        @JsonProperty("product_name")
-        private String productName;
+        @NotBlank(message = "Item name is required")
+        @JsonProperty("item_name")
+        private String itemName;
 
         @Min(value = 1, message = "Quantity must be at least 1")
         private Integer quantity;

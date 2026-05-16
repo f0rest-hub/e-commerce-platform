@@ -14,7 +14,6 @@ import org.springframework.data.relational.core.mapping.Table;
 @AllArgsConstructor
 @Table("order_item_mappings")
 public class OrderItemMapping {
-
     @Id
     private Long id;
 
@@ -23,8 +22,4 @@ public class OrderItemMapping {
 
     @Column("item_id")
     private Long itemId;
-
-    /** 1-based position of this item within the order for stable display ordering. */
-    @Column("position")
-    private Integer position;
 }

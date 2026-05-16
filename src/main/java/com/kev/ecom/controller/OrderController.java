@@ -19,8 +19,7 @@ import reactor.core.publisher.Mono;
 public class OrderController {
     private final OrderService orderService;
 
-    // POST /api/orders
-    @PostMapping
+    @PostMapping("/create-order")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<OrderResponse> createOrder(
             @AuthenticationPrincipal AuthenticatedUser principal,
@@ -28,25 +27,22 @@ public class OrderController {
         return orderService.createOrder(principal.getUserId(), request);
     }
 
-    // GET /api/orders/{id}
-    @GetMapping("/{id}")
-    public Mono<OrderResponse> getOrder(
+    @GetMapping("/get-order/{id}")
+    public Mono<OrderResponse> getOrderDetails(
             @AuthenticationPrincipal AuthenticatedUser principal,
             @PathVariable Long id) {
         return orderService.getOrderById(principal.getUserId(), id);
     }
 
-    // GET /api/orders?status=PENDING  — returns only the caller's orders
     @GetMapping
-    public Flux<OrderResponse> getMyOrders(
+    public Flux<OrderResponse> getAllOrders(
             @AuthenticationPrincipal AuthenticatedUser principal,
             @RequestParam(required = false) OrderStatus status) {
-        return orderService.getOrdersForUser(principal.getUserId(), status);
+        return orderService.getAllOrdersForUser(principal.getUserId(), status);
     }
 
-    // DELETE /api/orders/{id}  — cancels if PENDING
-    @DeleteMapping("/{id}")
-    public Mono<OrderResponse> cancelOrder(
+    @DeleteMapping("/cancel-order/{id}")
+    public Flux<OrderResponse> cancelOrder(
             @AuthenticationPrincipal AuthenticatedUser principal,
             @PathVariable Long id) {
         return orderService.cancelOrder(principal.getUserId(), id);
