@@ -2,27 +2,30 @@ spring:
   application:
     name: ecommerce-backend
 
-  # TODO - Hardcoded DB credentials to local. Change so it fetches from env var when deployed.
+# TODO - Create seperate database instead of connecting to default postgres database
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/
-    username: postgres
-    password: postgres
+    url: ${DB_URL:r2dbc:postgresql://localhost:5432/}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
 
   sql:
     init:
-      mode: always   # runs schema.sql on startup
+      mode: always
+      schema-locations: file:sql_scripts/schema.sql
 
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 app:
   jwt:
     # Minimum 32 chars for HS256 — change this in production and inject via env var
     secret: "${JWT_SECRET:my-super-secret-key-change-in-production!}"
-    expiration-ms: 86400000   # 24 hours # TODO - Big expiry time for uninterrupted testing. Change to ideal value.
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}   # 24 hours
+  scheduler:
+    order-promotion-rate: ${ORDER_PROMOTION_RATE:300000}
 
 logging:
   level:
-    com.ecommerce: DEBUG
-    org.springframework.r2dbc: DEBUG
-    org.springframework.security: DEBUG
+    com.kev.ecom: ${LOG_LEVEL:DEBUG}
+    org.springframework.r2dbc: ${LOG_LEVEL_R2DBC:DEBUG}
+    org.springframework.security: ${LOG_LEVEL_SECURITY:DEBUG}

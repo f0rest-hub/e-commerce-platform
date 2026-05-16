@@ -89,6 +89,7 @@ public class OrderService {
                 });
     }
 
+    //TODO - Add Pagination as we can't retrieve all records when app scales. Will do for v2
     public Flux<OrderResponse> getAllOrdersForUser(Long userId, OrderStatus status) {
         Flux<Order> orders = (status != null) ? orderRepository.findByUserIdAndStatus(userId, status) : orderRepository.findByUserId(userId);
         return orders.map(this::populateOrders);
